@@ -6,6 +6,7 @@
     <title>Flechas da Paz Church Paraipaba - Life Group</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link href='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css' rel='stylesheet' />
     <style>
         * {
             margin: 0;
@@ -17,12 +18,16 @@
         body {
             background: linear-gradient(135deg, #FFF5E1 0%, #FFE4B5 100%);
             color: #8B4513;
-            display: flex;
             transition: background 0.3s, color 0.3s;
+            line-height: 1.6;
         }
         body.dark-mode {
             background: linear-gradient(135deg, #2F2F2F 0%, #4A4A4A 100%);
             color: #FFF5E1;
+        }
+        body.custom-theme {
+            background: linear-gradient(135deg, #E6F3FA 0%, #B3E5FC 100%);
+            color: #1E88E5;
         }
         .sidebar {
             width: 250px;
@@ -31,58 +36,86 @@
             position: fixed;
             padding: 2rem 1rem;
             box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease;
+        }
+        .sidebar.hidden {
+            transform: translateX(-100%);
         }
         .sidebar h2 {
             color: #FFF5E1;
             font-family: 'Playfair Display', serif;
-            font-size: 1.6rem;
+            font-size: 1.8rem;
             margin-bottom: 2rem;
             text-align: center;
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
         }
         .sidebar a {
             display: flex;
             align-items: center;
             color: #FFF5E1;
             text-decoration: none;
-            padding: 0.8rem;
+            padding: 1rem;
             margin: 0.5rem 0;
             border-radius: 8px;
             transition: background 0.3s, transform 0.2s;
+            font-size: 1rem;
         }
         .sidebar a i {
-            margin-right: 0.5rem;
+            margin-right: 0.8rem;
         }
         .sidebar a:hover {
             background-color: #FFA500;
-            transform: translateX(5px);
+            transform: translateX(8px);
         }
-        #dark-mode-toggle {
+        #theme-toggle {
             background: none;
             border: none;
             color: #FFF5E1;
-            font-size: 1.2rem;
+            font-size: 1.3rem;
             cursor: pointer;
-            margin-top: 2rem;
+            margin-top: 1rem;
             display: block;
             width: 100%;
             text-align: center;
+            padding: 0.5rem;
+        }
+        .menu-toggle {
+            display: none;
+            position: fixed;
+            top: 1rem;
+            left: 1rem;
+            background: #8B4513;
+            color: #FFF5E1;
+            border: none;
+            padding: 0.7rem;
+            border-radius: 5px;
+            z-index: 1000;
+            font-size: 1.2rem;
+            cursor: pointer;
         }
         .main-content {
             margin-left: 250px;
             padding: 2rem;
             width: calc(100% - 250px);
+            transition: margin-left 0.3s ease, width 0.3s ease;
+        }
+        .main-content.full {
+            margin-left: 0;
+            width: 100%;
         }
         section {
-            margin-bottom: 3rem;
-            background: rgba(255, 245, 225, 0.9);
+            margin-bottom: 2.5rem;
+            background: rgba(255, 245, 225, 0.95);
             padding: 2rem;
-            border-radius: 15px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
             animation: fadeIn 1s ease-in;
         }
         body.dark-mode section {
-            background: rgba(74, 74, 74, 0.9);
+            background: rgba(74, 74, 74, 0.95);
+        }
+        body.custom-theme section {
+            background: rgba(230, 243, 250, 0.95);
         }
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(20px); }
@@ -90,48 +123,141 @@
         }
         h1, h2, h3 {
             font-family: 'Playfair Display', serif;
-            color: #8B4513;
-        }
-        body.dark-mode h1, body.dark-mode h2, body.dark-mode h3 {
-            color: #FFA500;
         }
         h1 {
             font-size: 2.5rem;
-            margin-bottom: 1rem;
+            margin-bottom: 1.5rem;
             text-align: center;
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
         }
         h2 {
             font-size: 2rem;
             margin-bottom: 1rem;
+            border-bottom: 3px solid #FFA500;
+            padding-bottom: 0.5rem;
+            color: #6B2E0A;
+        }
+        body.dark-mode h2 {
+            color: #FFD700;
+        }
+        body.custom-theme h2 {
+            color: #1565C0;
         }
         h3 {
             font-size: 1.5rem;
             margin: 0.8rem 0;
+            color: #8B4513;
+        }
+        body.dark-mode h3 {
+            color: #FFF5E1;
+        }
+        body.custom-theme h3 {
+            color: #1E88E5;
         }
         p, li {
-            line-height: 1.8;
+            font-size: 1rem;
             margin-bottom: 0.8rem;
+        }
+        .index {
+            background: rgba(255, 245, 225, 0.8);
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin-bottom: 1.5rem;
+        }
+        body.dark-mode .index {
+            background: rgba(74, 74, 74, 0.8);
+        }
+        body.custom-theme .index {
+            background: rgba(230, 243, 250, 0.8);
+        }
+        .index ul {
+            list-style: none;
+            padding-left: 1rem;
+        }
+        .index li {
+            margin: 0.5rem 0;
+        }
+        .index a {
+            color: #8B4513;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        .index a:hover {
+            color: #FFA500;
+        }
+        body.dark-mode .index a {
+            color: #FFD700;
+        }
+        body.dark-mode .index a:hover {
+            color: #FFA500;
+        }
+        body.custom-theme .index a {
+            color: #1E88E5;
+        }
+        body.custom-theme .index a:hover {
+            color: #1565C0;
+        }
+        .subsection {
+            margin-top: 1.5rem;
+            padding: 1.2rem;
+            border-left: 5px solid #FFA500;
+            background: rgba(255, 245, 225, 0.6);
+            border-radius: 8px;
+        }
+        body.dark-mode .subsection {
+            background: rgba(74, 74, 74, 0.6);
+            border-left-color: #FFD700;
+        }
+        body.custom-theme .subsection {
+            background: rgba(230, 243, 250, 0.6);
+            border-left-color: #1E88E5;
         }
         .filter-bar {
             display: flex;
-            gap: 1rem;
-            margin-bottom: 1rem;
+            flex-wrap: wrap;
+            gap: 0.7rem;
+            margin-bottom: 1.5rem;
+            justify-content: center;
         }
         .filter-btn {
             background: #FFA500;
             color: #FFF5E1;
             border: none;
-            padding: 0.5rem 1rem;
-            border-radius: 5px;
+            padding: 0.7rem 1.2rem;
+            border-radius: 6px;
             cursor: pointer;
+            font-size: 1rem;
+            transition: background 0.3s;
         }
         .filter-btn.active {
             background: #8B4513;
         }
+        .filter-btn:hover {
+            background: #FF8C00;
+        }
+        body.dark-mode .filter-btn {
+            background: #FFD700;
+        }
+        body.dark-mode .filter-btn.active {
+            background: #A0522D;
+        }
+        body.dark-mode .filter-btn:hover {
+            background: #FFC107;
+        }
+        body.custom-theme .filter-btn {
+            background: #1E88E5;
+        }
+        body.custom-theme .filter-btn.active {
+            background: #1565C0;
+        }
+        body.custom-theme .filter-btn:hover {
+            background: #1976D2;
+        }
         .carousel-container {
             position: relative;
             overflow: hidden;
+            margin: 0 auto;
+            max-width: 1200px;
         }
         .carousel {
             display: flex;
@@ -141,12 +267,17 @@
             background: linear-gradient(to bottom, #FFA500, #FF8C00);
             color: #FFF5E1;
             padding: 1.5rem;
-            border-radius: 10px;
+            border-radius: 12px;
             min-width: 300px;
-            margin-right: 1rem;
+            margin-right: 0.7rem;
             text-align: center;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
             display: none;
+            animation: slideIn 0.5s ease;
+        }
+        @keyframes slideIn {
+            from { transform: translateX(-100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
         }
         .carousel-item.active {
             display: block;
@@ -158,9 +289,11 @@
             background: #8B4513;
             color: #FFF5E1;
             border: none;
-            padding: 0.5rem;
+            padding: 0.7rem;
             cursor: pointer;
             border-radius: 50%;
+            font-size: 1.2rem;
+            z-index: 10;
         }
         #prev-btn {
             left: 10px;
@@ -168,59 +301,137 @@
         #next-btn {
             right: 10px;
         }
+        .carousel-btn:hover {
+            background: #A0522D;
+        }
+        body.dark-mode .carousel-btn {
+            background: #A0522D;
+        }
+        body.custom-theme .carousel-btn {
+            background: #1565C0;
+        }
         .verse-search {
             margin-bottom: 1rem;
+            text-align: center;
         }
         .verse-search input {
-            padding: 0.5rem;
-            border: 1px solid #8B4513;
-            border-radius: 5px;
+            padding: 0.7rem;
+            border: 2px solid #8B4513;
+            border-radius: 6px;
             width: 100%;
-            max-width: 300px;
+            max-width: 350px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+        .verse-search input:focus {
+            border-color: #FFA500;
+            outline: none;
+        }
+        body.dark-mode .verse-search input {
+            border-color: #FFD700;
+        }
+        body.dark-mode .verse-search input:focus {
+            border-color: #FFC107;
+        }
+        body.custom-theme .verse-search input {
+            border-color: #1E88E5;
+        }
+        body.custom-theme .verse-search input:focus {
+            border-color: #1565C0;
         }
         .verse-list {
-            max-height: 300px;
+            max-height: 250px;
             overflow-y: auto;
             padding: 1rem;
-            border: 1px solid #8B4513;
-            border-radius: 10px;
+            border: 2px solid #8B4513;
+            border-radius: 8px;
+            margin: 1rem auto;
+            max-width: 500px;
+        }
+        body.dark-mode .verse-list {
+            border-color: #FFD700;
+        }
+        body.custom-theme .verse-list {
+            border-color: #1E88E5;
+        }
+        .verse-list p {
+            margin: 0.5rem 0;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+        .verse-list p:hover {
+            color: #FFA500;
         }
         .devotional-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
             gap: 1rem;
+            margin-bottom: 1.5rem;
         }
         .devotional-card {
-            border: 1px solid #8B4513;
-            padding: 1rem;
+            border: 2px solid #8B4513;
+            padding: 1.2rem;
             border-radius: 10px;
             cursor: pointer;
             transition: transform 0.3s, box-shadow 0.3s;
+            animation: cardFadeIn 0.5s ease;
+            background: rgba(255, 245, 225, 0.8);
+        }
+        @keyframes cardFadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
         }
         .devotional-card:hover {
-            transform: scale(1.02);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            transform: scale(1.03);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
         }
         body.dark-mode .devotional-card {
-            border-color: #FFA500;
+            border-color: #FFD700;
+            background: rgba(74, 74, 74, 0.8);
+        }
+        body.custom-theme .devotional-card {
+            border-color: #1E88E5;
+            background: rgba(230, 243, 250, 0.8);
+        }
+        .devotional-card h3 {
+            font-size: 1.3rem;
+            margin-bottom: 0.5rem;
         }
         .pagination {
             display: flex;
             justify-content: center;
-            gap: 0.5rem;
-            margin-top: 1rem;
+            gap: 1rem;
+            margin-top: 1.5rem;
         }
         .pagination button {
             background: #FFA500;
             color: #FFF5E1;
             border: none;
-            padding: 0.5rem 1rem;
-            border-radius: 5px;
+            padding: 0.7rem 1.5rem;
+            border-radius: 6px;
             cursor: pointer;
+            font-size: 1rem;
+            transition: background 0.3s;
         }
         .pagination button:disabled {
             background: #A9A9A9;
             cursor: not-allowed;
+        }
+        .pagination button:hover:not(:disabled) {
+            background: #FF8C00;
+        }
+        body.dark-mode .pagination button {
+            background: #FFD700;
+        }
+        body.dark-mode .pagination button:hover:not(:disabled) {
+            background: #FFC107;
+        }
+        body.custom-theme .pagination button {
+            background: #1E88E5;
+        }
+        body.custom-theme .pagination button:hover:not(:disabled) {
+            background: #1976D2;
         }
         .modal {
             display: none;
@@ -229,27 +440,48 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.5);
+            background: rgba(0, 0, 0, 0.6);
             z-index: 1000;
+            backdrop-filter: blur(5px);
         }
         .modal-content {
             background: #FFF5E1;
             margin: 5% auto;
             padding: 2rem;
-            width: 80%;
+            width: 90%;
             max-width: 600px;
             border-radius: 15px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
             max-height: 80vh;
             overflow-y: auto;
         }
         body.dark-mode .modal-content {
             background: #4A4A4A;
         }
+        body.custom-theme .modal-content {
+            background: #E6F3FA;
+        }
         .close-btn {
             float: right;
-            font-size: 1.5rem;
+            font-size: 1.8rem;
             cursor: pointer;
+            color: #8B4513;
+            transition: color 0.3s;
+        }
+        .close-btn:hover {
+            color: #FFA500;
+        }
+        body.dark-mode .close-btn {
+            color: #FFD700;
+        }
+        body.dark-mode .close-btn:hover {
+            color: #FFC107;
+        }
+        body.custom-theme .close-btn {
+            color: #1E88E5;
+        }
+        body.custom-theme .close-btn:hover {
+            color: #1565C0;
         }
         button, .btn {
             background: linear-gradient(to right, #FFA500, #FF8C00);
@@ -259,10 +491,24 @@
             border-radius: 8px;
             cursor: pointer;
             margin: 0.5rem 0;
-            transition: background 0.3s;
+            font-size: 1rem;
+            transition: background 0.3s, transform 0.2s;
         }
         button:hover, .btn:hover {
             background: linear-gradient(to right, #8B4513, #A0522D);
+            transform: translateY(-2px);
+        }
+        body.dark-mode button, body.dark-mode .btn {
+            background: linear-gradient(to right, #FFD700, #FFC107);
+        }
+        body.dark-mode button:hover, body.dark-mode .btn:hover {
+            background: linear-gradient(to right, #A0522D, #8B4513);
+        }
+        body.custom-theme button, body.custom-theme .btn {
+            background: linear-gradient(to right, #1E88E5, #1976D2);
+        }
+        body.custom-theme button:hover, body.custom-theme .btn:hover {
+            background: linear-gradient(to right, #1565C0, #0D47A1);
         }
         #back-to-top {
             position: fixed;
@@ -273,44 +519,131 @@
             padding: 0.8rem;
             border-radius: 50%;
             display: none;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            font-size: 1.2rem;
+            transition: transform 0.3s;
+        }
+        #back-to-top:hover {
+            transform: scale(1.1);
+        }
+        body.dark-mode #back-to-top {
+            background: #FFD700;
+        }
+        body.custom-theme #back-to-top {
+            background: #1E88E5;
         }
         footer {
             background: #8B4513;
             color: #FFF5E1;
             text-align: center;
-            padding: 1rem;
+            padding: 1.5rem;
             margin-left: 250px;
+            font-size: 1rem;
         }
         footer a {
             color: #FFA500;
             text-decoration: none;
+            transition: color 0.3s;
+        }
+        footer a:hover {
+            color: #FF8C00;
+        }
+        body.dark-mode footer a {
+            color: #FFD700;
+        }
+        body.dark-mode footer a:hover {
+            color: #FFC107;
+        }
+        body.custom-theme footer a {
+            color: #1E88E5;
+        }
+        body.custom-theme footer a:hover {
+            color: #1565C0;
+        }
+        .favorites, .progress {
+            margin-top: 1.5rem;
+            padding: 1rem;
+            border: 2px solid #8B4513;
+            border-radius: 8px;
+            background: rgba(255, 245, 225, 0.8);
+        }
+        body.dark-mode .favorites, body.dark-mode .progress {
+            border-color: #FFD700;
+            background: rgba(74, 74, 74, 0.8);
+        }
+        body.custom-theme .favorites, body.custom-theme .progress {
+            border-color: #1E88E5;
+            background: rgba(230, 243, 250, 0.8);
+        }
+        .calendar {
+            margin-top: 1.5rem;
+            padding: 1rem;
+            border: 2px solid #8B4513;
+            border-radius: 8px;
+            background: rgba(255, 245, 225, 0.8);
+        }
+        body.dark-mode .calendar {
+            border-color: #FFD700;
+            background: rgba(74, 74, 74, 0.8);
+        }
+        body.custom-theme .calendar {
+            border-color: #1E88E5;
+            background: rgba(230, 243, 250, 0.8);
         }
         @media (max-width: 768px) {
             .sidebar {
-                width: 100%;
-                height: auto;
-                position: static;
+                width: 200px;
+            }
+            .sidebar.hidden {
+                transform: translateX(-100%);
+            }
+            .menu-toggle {
+                display: block;
             }
             .main-content {
                 margin-left: 0;
                 width: 100%;
-                padding: 1rem;
+                padding: 1.5rem;
+            }
+            .main-content.full {
+                margin-left: 0;
+                width: 100%;
             }
             footer {
                 margin-left: 0;
             }
             h1 { font-size: 2rem; }
-            h2 { font-size: 1.6rem; }
-            .carousel-item { min-width: 250px; }
+            h2 { font-size: 1.7rem; }
+            h3 { font-size: 1.3rem; }
+            .carousel-item {
+                min-width: 100%;
+                margin-right: 0;
+            }
             .devotional-grid {
                 grid-template-columns: 1fr;
+            }
+            .modal-content {
+                width: 95%;
+                margin: 10% auto;
+                padding: 1.5rem;
+            }
+            .filter-bar {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+            .filter-btn {
+                width: 100%;
+                text-align: center;
+            }
+            .calendar {
+                font-size: 0.9rem;
             }
         }
     </style>
 </head>
 <body>
-    <div class="sidebar">
+    <button class="menu-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+    <div class="sidebar hidden">
         <h2>Flechas da Paz</h2>
         <a href="#home"><i class="fas fa-home"></i> Início</a>
         <a href="#about"><i class="fas fa-info-circle"></i> Sobre</a>
@@ -318,80 +651,136 @@
         <a href="#dynamics"><i class="fas fa-users"></i> Dinâmicas</a>
         <a href="#verses"><i class="fas fa-book"></i> Versículo do Dia</a>
         <a href="#devotionals"><i class="fas fa-pray"></i> Devocionais</a>
-        <button id="dark-mode-toggle">🌙</button>
+        <a href="#calendar"><i class="fas fa-calendar"></i> Calendário</a>
+        <button id="theme-toggle">🌙</button>
+        <button class="btn" onclick="toggleCustomTheme()">Tema Personalizado</button>
     </div>
 
-    <div class="main-content">
+    <div class="main-content full">
         <section id="home">
             <h1>Bem-Vindo ao Life Group Flechas da Paz</h1>
             <p>Nosso Life Group é um espaço acolhedor onde nos reunimos semanalmente para aprofundar a palavra ministrada no domingo, viver como uma família cristã, adorar, orar, edificar nossa vida espiritual e evangelizar. Aqui, crescemos juntos no amor, na fé e na alegria, seguindo a visão do MDA.</p>
+            <div class="index">
+                <h2>Índice</h2>
+                <ul>
+                    <li><a href="#about">Sobre o Life Group</a>
+                        <ul>
+                            <li><a href="#about-what-is">O que é uma célula?</a></li>
+                            <li><a href="#about-what-is-not">O que não é uma célula?</a></li>
+                            <li><a href="#about-purposes">Propósitos da Célula</a></li>
+                            <li><a href="#about-qualities">Qualidades da Célula</a></li>
+                            <li><a href="#about-functions">Cinco Funções da Célula</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="#mda">Visão do MDA</a>
+                        <ul>
+                            <li><a href="#mda-meaning">Significado de MDA</a></li>
+                            <li><a href="#mda-atmospheres">Três Atmosferas</a></li>
+                            <li><a href="#mda-ladder">Escada do Sucesso</a></li>
+                            <li><a href="#mda-hearts">Cores dos Corações</a></li>
+                            <li><a href="#mda-terms">Significados de Termos</a></li>
+                            <li><a href="#mda-pillars">Quatro Colunas</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="#dynamics">Dinâmicas</a></li>
+                    <li><a href="#verses">Versículo do Dia</a></li>
+                    <li><a href="#devotionals">Devocionais</a></li>
+                    <li><a href="#calendar">Calendário</a></li>
+                </ul>
+            </div>
         </section>
 
         <section id="about">
             <h2>Sobre o Life Group</h2>
-            <p><strong>O que é uma célula?</strong> Um grupo de 5 a 15 pessoas que se reúnem semanalmente para viver como família cristã, adorar, edificar a vida espiritual, orar e evangelizar. É um lugar de comunhão, crescimento e cuidado mútuo.</p>
-            <p><strong>O que não é uma célula?</strong> Não é apenas um grupo de oração, estudo bíblico, discipulado, cura interior, apoio ou ponto de pregação. É muito mais que isso: é uma família espiritual!</p>
-            <h3>Propósitos da Célula</h3>
-            <ul>
-                <li>Crescimento no relacionamento com Deus</li>
-                <li>Relacionamento profundo entre os membros</li>
-                <li>Equipar e treinar para o serviço</li>
-                <li>Apoio emocional e cura espiritual</li>
-                <li>Cuidado pastoral individualizado</li>
-                <li>Desenvolver líderes para o Reino</li>
-                <li>Ministrar aos de fora com amor</li>
-                <li>Levar pessoas a um encontro com Jesus</li>
-            </ul>
-            <h3>Qualidades da Célula</h3>
-            <ul>
-                <li>Informalidade: um ambiente leve e descontraído</li>
-                <li>Amizade e Comunhão: laços que edificam</li>
-                <li>Evangelismo: alcançar os perdidos</li>
-                <li>Crescimento ilimitado: multiplicação contínua</li>
-                <li>Oportunidade ministerial: todos podem servir</li>
-                <li>Pastoreio: cuidado mútuo e amoroso</li>
-            </ul>
-            <h3>Cinco Funções da Célula</h3>
-            <ul>
-                <li>Evangelismo e Integração: trazer novos membros e integrá-los</li>
-                <li>Pastoreamento e Discipulado: cuidar e formar discípulos</li>
-                <li>Comunhão e Relacionamento: fortalecer os laços</li>
-                <li>Treinamento de Líderes: preparar para multiplicação</li>
-                <li>Crescimento e Multiplicação: expandir o Reino de Deus</li>
-            </ul>
+            <div class="subsection" id="about-what-is">
+                <h3>O que é uma célula?</h3>
+                <p>Um grupo de 5 a 15 pessoas que se reúnem semanalmente para viver como família cristã, adorar, edificar a vida espiritual, orar e evangelizar. É um lugar de comunhão, crescimento e cuidado mútuo.</p>
+            </div>
+            <div class="subsection" id="about-what-is-not">
+                <h3>O que não é uma célula?</h3>
+                <p>Não é apenas um grupo de oração, estudo bíblico, discipulado, cura interior, apoio ou ponto de pregação. É muito mais que isso: é uma família espiritual!</p>
+            </div>
+            <div class="subsection" id="about-purposes">
+                <h3>Propósitos da Célula</h3>
+                <ul>
+                    <li>Crescimento no relacionamento com Deus</li>
+                    <li>Relacionamento profundo entre os membros</li>
+                    <li>Equipar e treinar para o serviço</li>
+                    <li>Apoio emocional e cura espiritual</li>
+                    <li>Cuidado pastoral individualizado</li>
+                    <li>Desenvolver líderes para o Reino</li>
+                    <li>Ministrar aos de fora com amor</li>
+                    <li>Levar pessoas a um encontro com Jesus</li>
+                </ul>
+            </div>
+            <div class="subsection" id="about-qualities">
+                <h3>Qualidades da Célula</h3>
+                <ul>
+                    <li>Informalidade: um ambiente leve e descontraído</li>
+                    <li>Amizade e Comunhão: laços que edificam</li>
+                    <li>Evangelismo: alcançar os perdidos</li>
+                    <li>Crescimento ilimitado: multiplicação contínua</li>
+                    <li>Oportunidade ministerial: todos podem servir</li>
+                    <li>Pastoreio: cuidado mútuo e amoroso</li>
+                </ul>
+            </div>
+            <div class="subsection" id="about-functions">
+                <h3>Cinco Funções da Célula</h3>
+                <ul>
+                    <li>Evangelismo e Integração: trazer novos membros e integrá-los</li>
+                    <li>Pastoreamento e Discipulado: cuidar e formar discípulos</li>
+                    <li>Comunhão e Relacionamento: fortalecer os laços</li>
+                    <li>Treinamento de Líderes: preparar para multiplicação</li>
+                    <li>Crescimento e Multiplicação: expandir o Reino de Deus</li>
+                </ul>
+            </div>
         </section>
 
         <section id="mda">
             <h2>Visão do MDA</h2>
-            <p><strong>Significado de MDA:</strong> Modelo de Discipulado Apostólico, uma visão que busca formar discípulos que fazem discípulos, multiplicando o Reino de Deus.</p>
-            <p><strong>Três Atmosferas da Célula:</strong> Alegria (um ambiente de celebração), Fé (confiança em Deus) e Amor (relacionamentos genuínos).</p>
-            <p><strong>Escada do Sucesso:</strong></p>
-            <ul>
-                <li>Ganhar: alcançar novas pessoas para Cristo</li>
-                <li>Consolidar: firmar os novos convertidos na fé</li>
-                <li>Edificar: construir vidas espiritualmente maduras</li>
-                <li>Enviar: capacitar para multiplicar e liderar</li>
-            </ul>
-            <p><strong>Cores dos Corações:</strong></p>
-            <ul>
-                <li>Coração Vermelho – Igreja do Senhor Jesus: o corpo global de Cristo</li>
-                <li>Coração Azul – Igreja Local: nossa comunidade de fé</li>
-                <li>Coração Verde – Célula: o coração da comunhão</li>
-                <li>Coração Amarelo – Discipulado um a um: cuidado personalizado</li>
-            </ul>
-            <p><strong>Significados:</strong></p>
-            <ul>
-                <li><strong>G.D.:</strong> Grupo de Discipulado – grupo fechado para crescimento espiritual e formação de caráter.</li>
-                <li><strong>G.E.:</strong> Grupo de Evangelismo – evangelismo em grupo, informal, visando decisões por Jesus.</li>
-                <li><strong>EMP:</strong> Escola Ministerial Paz – formação para líderes e ministros.</li>
-            </ul>
-            <p><strong>Quatro Colunas do MDA:</strong></p>
-            <ul>
-                <li><strong>Purê de Batatas:</strong> Comunhão plena (Koinonia), todos unidos como um só corpo, como um "purê".</li>
-                <li><strong>Projeto Natanael 3:</strong> Interceder, conquistar e convidar três pessoas para se tornarem cristãos e membros da célula.</li>
-                <li><strong>Grupo de Evangelismo:</strong> Evangelismo direcionado em pequenas reuniões para alcançar indivíduos e famílias.</li>
-                <li><strong>Fator Barnabé:</strong> Investir tempo em uma pessoa para formação de caráter e preparação ministerial, como Barnabé fez com Saulo (Paulo).</li>
-            </ul>
+            <div class="subsection" id="mda-meaning">
+                <h3>Significado de MDA</h3>
+                <p>Modelo de Discipulado Apostólico, uma visão que busca formar discípulos que fazem discípulos, multiplicando o Reino de Deus.</p>
+            </div>
+            <div class="subsection" id="mda-atmospheres">
+                <h3>Três Atmosferas da Célula</h3>
+                <p>Alegria (um ambiente de celebração), Fé (confiança em Deus) e Amor (relacionamentos genuínos).</p>
+            </div>
+            <div class="subsection" id="mda-ladder">
+                <h3>Escada do Sucesso</h3>
+                <ul>
+                    <li>Ganhar: alcançar novas pessoas para Cristo</li>
+                    <li>Consolidar: firmar os novos convertidos na fé</li>
+                    <li>Edificar: construir vidas espiritualmente maduras</li>
+                    <li>Enviar: capacitar para multiplicar e liderar</li>
+                </ul>
+            </div>
+            <div class="subsection" id="mda-hearts">
+                <h3>Cores dos Corações</h3>
+                <ul>
+                    <li>Coração Vermelho – Igreja do Senhor Jesus: o corpo global de Cristo</li>
+                    <li>Coração Azul – Igreja Local: nossa comunidade de fé</li>
+                    <li>Coração Verde – Célula: o coração da comunhão</li>
+                    <li>Coração Amarelo – Discipulado um a um: cuidado personalizado</li>
+                </ul>
+            </div>
+            <div class="subsection" id="mda-terms">
+                <h3>Significados de Termos</h3>
+                <ul>
+                    <li><strong>G.D.:</strong> Grupo de Discipulado – grupo fechado para crescimento espiritual e formação de caráter.</li>
+                    <li><strong>G.E.:</strong> Grupo de Evangelismo – evangelismo em grupo, informal, visando decisões por Jesus.</li>
+                    <li><strong>EMP:</strong> Escola Ministerial Paz – formação para líderes e ministros.</li>
+                </ul>
+            </div>
+            <div class="subsection" id="mda-pillars">
+                <h3>Quatro Colunas do MDA</h3>
+                <ul>
+                    <li><strong>Purê de Batatas:</strong> Comunhão plena (Koinonia), todos unidos como um só corpo, como um "purê".</li>
+                    <li><strong>Projeto Natanael 3:</strong> Interceder, conquistar e convidar três pessoas para se tornarem cristãos e membros da célula.</li>
+                    <li><strong>Grupo de Evangelismo:</strong> Evangelismo direcionado em pequenas reuniões para alcançar indivíduos e famílias.</li>
+                    <li><strong>Fator Barnabé:</strong> Investir tempo em uma pessoa para formação de caráter e preparação ministerial, como Barnabé fez com Saulo (Paulo).</li>
+                </ul>
+            </div>
         </section>
 
         <section id="dynamics">
@@ -403,248 +792,369 @@
                 <button class="filter-btn" onclick="filterDynamics('evangelismo')">Evangelismo</button>
                 <button class="filter-btn" onclick="filterDynamics('comunhao')">Comunhão</button>
             </div>
+            <div class="favorites" id="favorites-dynamics"></div>
             <div class="carousel-container">
                 <button id="prev-btn" class="carousel-btn"><i class="fas fa-chevron-left"></i></button>
                 <div id="carousel" class="carousel">
                     <div class="carousel-item" data-category="quebra-gelo">
                         <h3>Duas Verdades, Uma Mentira</h3>
                         <p>Cada pessoa compartilha três fatos sobre si, sendo um falso. Os outros tentam adivinhar a mentira.</p>
+                        <button class="btn" onclick="toggleFavorite('Duas Verdades, Uma Mentira', 'dynamics')">Favoritar</button>
+                        <button class="btn" onclick="playAudio('Duas Verdades, Uma Mentira')">Ouvir</button>
                     </div>
                     <div class="carousel-item" data-category="reflexao">
                         <h3>Caça ao Versículo</h3>
                         <p>Esconda papéis com versículos pela sala. Divida o grupo em equipes para encontrá-los e discutir o significado.</p>
+                        <button class="btn" onclick="toggleFavorite('Caça ao Versículo', 'dynamics')">Favoritar</button>
+                        <button class="btn" onclick="playAudio('Caça ao Versículo')">Ouvir</button>
                     </div>
                     <div class="carousel-item" data-category="comunhao">
                         <h3>Orações em Cadeia</h3>
                         <p>Cada pessoa ora por quem está à sua direita, formando um círculo de oração.</p>
+                        <button class="btn" onclick="toggleFavorite('Orações em Cadeia', 'dynamics')">Favoritar</button>
+                        <button class="btn" onclick="playAudio('Orações em Cadeia')">Ouvir</button>
                     </div>
                     <div class="carousel-item" data-category="reflexao">
                         <h3>Histórias de Fé</h3>
                         <p>Peça a cada membro para compartilhar uma experiência em que sentiu a presença de Deus.</p>
+                        <button class="btn" onclick="toggleFavorite('Histórias de Fé', 'dynamics')">Favoritar</button>
+                        <button class="btn" onclick="playAudio('Histórias de Fé')">Ouvir</button>
                     </div>
                     <div class="carousel-item" data-category="comunhao">
                         <h3>Desafio de Louvor</h3>
                         <p>Divida o grupo em duplas para criar uma pequena música ou poesia de louvor a Deus.</p>
+                        <button class="btn" onclick="toggleFavorite('Desafio de Louvor', 'dynamics')">Favoritar</button>
+                        <button class="btn" onclick="playAudio('Desafio de Louvor')">Ouvir</button>
                     </div>
                     <div class="carousel-item" data-category="comunhao">
                         <h3>Caixa de Gratidão</h3>
                         <p>Coloque uma caixa no centro. Cada pessoa escreve algo pelo qual é grata e compartilha com o grupo.</p>
+                        <button class="btn" onclick="toggleFavorite('Caixa de Gratidão', 'dynamics')">Favoritar</button>
+                        <button class="btn" onclick="playAudio('Caixa de Gratidão')">Ouvir</button>
                     </div>
                     <div class="carousel-item" data-category="quebra-gelo">
                         <h3>Jogo das Frutas</h3>
                         <p>Cada pessoa recebe o nome de uma fruta. Alguém no centro diz duas frutas, e elas trocam de lugar enquanto o líder tenta sentar.</p>
+                        <button class="btn" onclick="toggleFavorite('Jogo das Frutas', 'dynamics')">Favoritar</button>
+                        <button class="btn" onclick="playAudio('Jogo das Frutas')">Ouvir</button>
                     </div>
                     <div class="carousel-item" data-category="quebra-gelo">
                         <h3>Versículo em Mímica</h3>
                         <p>Divida o grupo em equipes. Cada equipe representa um versículo em mímica para os outros adivinharem.</p>
+                        <button class="btn" onclick="toggleFavorite('Versículo em Mímica', 'dynamics')">Favoritar</button>
+                        <button class="btn" onclick="playAudio('Versículo em Mímica')">Ouvir</button>
                     </div>
                     <div class="carousel-item" data-category="comunhao">
                         <h3>Árvore da Vida</h3>
                         <p>Desenhe uma árvore em um papel grande. Cada pessoa adiciona uma folha com uma oração ou promessa para o grupo.</p>
+                        <button class="btn" onclick="toggleFavorite('Árvore da Vida', 'dynamics')">Favoritar</button>
+                        <button class="btn" onclick="playAudio('Árvore da Vida')">Ouvir</button>
                     </div>
                     <div class="carousel-item" data-category="quebra-gelo">
                         <h3>Roleta de Perguntas</h3>
                         <p>Crie uma roleta com perguntas sobre a Bíblia ou vida espiritual. Cada pessoa responde e o grupo reflete.</p>
+                        <button class="btn" onclick="toggleFavorite('Roleta de Perguntas', 'dynamics')">Favoritar</button>
+                        <button class="btn" onclick="playAudio('Roleta de Perguntas')">Ouvir</button>
                     </div>
                     <div class="carousel-item" data-category="quebra-gelo">
                         <h3>Eu Nunca</h3>
                         <p>Cada pessoa diz algo que nunca fez. Quem já fez levanta a mão e compartilha a história.</p>
+                        <button class="btn" onclick="toggleFavorite('Eu Nunca', 'dynamics')">Favoritar</button>
+                        <button class="btn" onclick="playAudio('Eu Nunca')">Ouvir</button>
                     </div>
                     <div class="carousel-item" data-category="quebra-gelo">
                         <h3>Objeto da Memória</h3>
                         <p>Cada pessoa traz um objeto que representa um momento especial com Deus e explica o significado.</p>
+                        <button class="btn" onclick="toggleFavorite('Objeto da Memória', 'dynamics')">Favoritar</button>
+                        <button class="btn" onclick="playAudio('Objeto da Memória')">Ouvir</button>
                     </div>
                     <div class="carousel-item" data-category="quebra-gelo">
                         <h3>Advinhe Quem Sou</h3>
                         <p>Cada pessoa escreve algo sobre si em um papel. O líder lê, e o grupo adivinha quem é.</p>
+                        <button class="btn" onclick="toggleFavorite('Advinhe Quem Sou', 'dynamics')">Favoritar</button>
+                        <button class="btn" onclick="playAudio('Advinhe Quem Sou')">Ouvir</button>
                     </div>
                     <div class="carousel-item" data-category="quebra-gelo">
                         <h3>Stop Bíblico</h3>
                         <p>Escolha categorias como "personagem bíblico", "livro da Bíblia", "milagre". Diga uma letra, e todos escrevem algo que comece com ela.</p>
+                        <button class="btn" onclick="toggleFavorite('Stop Bíblico', 'dynamics')">Favoritar</button>
+                        <button class="btn" onclick="playAudio('Stop Bíblico')">Ouvir</button>
                     </div>
                     <div class="carousel-item" data-category="quebra-gelo">
                         <h3>Telefone Sem Fio</h3>
                         <p>Passe uma frase bíblica de pessoa em pessoa sussurrando. Veja como ela muda no final!</p>
+                        <button class="btn" onclick="toggleFavorite('Telefone Sem Fio', 'dynamics')">Favoritar</button>
+                        <button class="btn" onclick="playAudio('Telefone Sem Fio')">Ouvir</button>
                     </div>
                     <div class="carousel-item" data-category="quebra-gelo">
                         <h3>Caixa de Perguntas</h3>
                         <p>Coloque perguntas leves em uma caixa (ex.: "Qual seu louvor favorito?"). Cada pessoa tira uma e responde.</p>
+                        <button class="btn" onclick="toggleFavorite('Caixa de Perguntas', 'dynamics')">Favoritar</button>
+                        <button class="btn" onclick="playAudio('Caixa de Perguntas')">Ouvir</button>
                     </div>
                     <div class="carousel-item" data-category="reflexao">
                         <h3>Reflexão em Duplas</h3>
                         <p>Leia um versículo. Em duplas, cada um compartilha o que Deus falou através dele.</p>
+                        <button class="btn" onclick="toggleFavorite('Reflexão em Duplas', 'dynamics')">Favoritar</button>
+                        <button class="btn" onclick="playAudio('Reflexão em Duplas')">Ouvir</button>
                     </div>
                     <div class="carousel-item" data-category="reflexao">
                         <h3>Diário de Bênçãos</h3>
                         <p>Cada pessoa escreve uma bênção da semana e compartilha como Deus agiu.</p>
+                        <button class="btn" onclick="toggleFavorite('Diário de Bênçãos', 'dynamics')">Favoritar</button>
+                        <button class="btn" onclick="playAudio('Diário de Bênçãos')">Ouvir</button>
                     </div>
                     <div class="carousel-item" data-category="reflexao">
                         <h3>Escolha um Salmo</h3>
                         <p>Leia um Salmo juntos e cada pessoa compartilha o que mais a tocou.</p>
+                        <button class="btn" onclick="toggleFavorite('Escolha um Salmo', 'dynamics')">Favoritar</button>
+                        <button class="btn" onclick="playAudio('Escolha um Salmo')">Ouvir</button>
                     </div>
                     <div class="carousel-item" data-category="reflexao">
                         <h3>Reflexão Silenciosa</h3>
                         <p>Coloque uma música instrumental. Cada pessoa reflete sobre uma pergunta (ex.: "O que Deus quer me ensinar hoje?").</p>
+                        <button class="btn" onclick="toggleFavorite('Reflexão Silenciosa', 'dynamics')">Favoritar</button>
+                        <button class="btn" onclick="playAudio('Reflexão Silenciosa')">Ouvir</button>
                     </div>
                     <div class="carousel-item" data-category="reflexao">
                         <h3>Cartas para Deus</h3>
                         <p>Cada pessoa escreve uma carta para Deus com um pedido ou agradecimento e lê para o grupo.</p>
+                        <button class="btn" onclick="toggleFavorite('Cartas para Deus', 'dynamics')">Favoritar</button>
+                        <button class="btn" onclick="playAudio('Cartas para Deus')">Ouvir</button>
                     </div>
                     <div class="carousel-item" data-category="reflexao">
                         <h3>Versículo da Semana</h3>
                         <p>Escolha um versículo para a semana. Cada pessoa compartilha como o aplicou em sua vida.</p>
+                        <button class="btn" onclick="toggleFavorite('Versículo da Semana', 'dynamics')">Favoritar</button>
+                        <button class="btn" onclick="playAudio('Versículo da Semana')">Ouvir</button>
                     </div>
                     <div class="carousel-item" data-category="reflexao">
                         <h3>Mapa da Fé</h3>
                         <p>Cada pessoa desenha um "mapa" de sua jornada de fé e compartilha os momentos marcantes.</p>
+                        <button class="btn" onclick="toggleFavorite('Mapa da Fé', 'dynamics')">Favoritar</button>
+                        <button class="btn" onclick="playAudio('Mapa da Fé')">Ouvir</button>
                     </div>
                     <div class="carousel-item" data-category="reflexao">
                         <h3>Frases Inspiradoras</h3>
                         <p>Escreva frases de encorajamento baseadas em versículos e distribua entre os membros.</p>
+                        <button class="btn" onclick="toggleFavorite('Frases Inspiradoras', 'dynamics')">Favoritar</button>
+                        <button class="btn" onclick="playAudio('Frases Inspiradoras')">Ouvir</button>
                     </div>
                     <div class="carousel-item" data-category="reflexao">
                         <h3>Timeline da Vida</h3>
                         <p>Cada pessoa desenha uma linha do tempo de sua vida e destaca onde Deus agiu.</p>
+                        <button class="btn" onclick="toggleFavorite('Timeline da Vida', 'dynamics')">Favoritar</button>
+                        <button class="btn" onclick="playAudio('Timeline da Vida')">Ouvir</button>
                     </div>
                     <div class="carousel-item" data-category="evangelismo">
                         <h3>Convite Criativo</h3>
                         <p>Crie convites para a célula e distribua para amigos ou vizinhos.</p>
+                        <button class="btn" onclick="toggleFavorite('Convite Criativo', 'dynamics')">Favoritar</button>
+                        <button class="btn" onclick="playAudio('Convite Criativo')">Ouvir</button>
                     </div>
                     <div class="carousel-item" data-category="evangelismo">
                         <h3>História de Impacto</h3>
                         <p>Cada pessoa compartilha uma história de como Jesus mudou sua vida para inspirar um amigo.</p>
+                        <button class="btn" onclick="toggleFavorite('História de Impacto', 'dynamics')">Favoritar</button>
+                        <button class="btn" onclick="playAudio('História de Impacto')">Ouvir</button>
                     </div>
                     <div class="carousel-item" data-category="evangelismo">
                         <h3>Cartão de Oração</h3>
                         <p>Escreva cartões com pedidos de oração para pessoas fora da célula e ore por elas.</p>
+                        <button class="btn" onclick="toggleFavorite('Cartão de Oração', 'dynamics')">Favoritar</button>
+                        <button class="btn" onclick="playAudio('Cartão de Oração')">Ouvir</button>
                     </div>
                     <div class="carousel-item" data-category="evangelismo">
                         <h3>Desafio de Bondade</h3>
                         <p>Faça um ato de bondade por alguém e conte como Jesus te inspirou a fazer isso.</p>
+                        <button class="btn" onclick="toggleFavorite('Desafio de Bondade', 'dynamics')">Favoritar</button>
+                        <button class="btn" onclick="playAudio('Desafio de Bondade')">Ouvir</button>
                     </div>
                     <div class="carousel-item" data-category="evangelismo">
                         <h3>Versículo no Trabalho</h3>
                         <p>Deixe um versículo encorajador no ambiente de trabalho e explique seu significado a um colega.</p>
+                        <button class="btn" onclick="toggleFavorite('Versículo no Trabalho', 'dynamics')">Favoritar</button>
+                        <button class="btn" onclick="playAudio('Versículo no Trabalho')">Ouvir</button>
                     </div>
                     <div class="carousel-item" data-category="evangelismo">
                         <h3>Projeto Natanael</h3>
                         <p>Escolha 3 pessoas para orar e convidar para a célula, como no Projeto Natanael 3.</p>
+                        <button class="btn" onclick="toggleFavorite('Projeto Natanael', 'dynamics')">Favoritar</button>
+                        <button class="btn" onclick="playAudio('Projeto Natanael')">Ouvir</button>
                     </div>
                     <div class="carousel-item" data-category="evangelismo">
                         <h3>História em Quadrinhos</h3>
                         <p>Crie uma história em quadrinhos sobre um milagre de Jesus e compartilhe com alguém.</p>
+                        <button class="btn" onclick="toggleFavorite('História em Quadrinhos', 'dynamics')">Favoritar</button>
+                        <button class="btn" onclick="playAudio('História em Quadrinhos')">Ouvir</button>
                     </div>
                     <div class="carousel-item" data-category="evangelismo">
                         <h3>Convite para o Culto</h3>
                         <p>Convide um amigo para o culto de domingo e compartilhe o que a célula significa para você.</p>
+                        <button class="btn" onclick="toggleFavorite('Convite para o Culto', 'dynamics')">Favoritar</button>
+                        <button class="btn" onclick="playAudio('Convite para o Culto')">Ouvir</button>
                     </div>
                     <div class="carousel-item" data-category="evangelismo">
                         <h3>Versículo no WhatsApp</h3>
                         <p>Envie um versículo para um amigo no WhatsApp e diga como ele pode impactar a vida dele.</p>
+                        <button class="btn" onclick="toggleFavorite('Versículo no WhatsApp', 'dynamics')">Favoritar</button>
+                        <button class="btn" onclick="playAudio('Versículo no WhatsApp')">Ouvir</button>
                     </div>
                     <div class="carousel-item" data-category="evangelismo">
                         <h3>Testemunho em 1 Minuto</h3>
                         <p>Prepare um testemunho de 1 minuto e compartilhe com alguém que precisa de esperança.</p>
+                        <button class="btn" onclick="toggleFavorite('Testemunho em 1 Minuto', 'dynamics')">Favoritar</button>
+                        <button class="btn" onclick="playAudio('Testemunho em 1 Minuto')">Ouvir</button>
                     </div>
                     <div class="carousel-item" data-category="comunhao">
                         <h3>Amigo Secreto de Oração</h3>
                         <p>Faça um sorteio de amigo secreto. Cada pessoa ora pelo seu amigo durante a semana.</p>
+                        <button class="btn" onclick="toggleFavorite('Amigo Secreto de Oração', 'dynamics')">Favoritar</button>
+                        <button class="btn" onclick="playAudio('Amigo Secreto de Oração')">Ouvir</button>
                     </div>
                     <div class="carousel-item" data-category="comunhao">
                         <h3>Jantar Compartilhado</h3>
                         <p>Cada pessoa traz um prato para compartilhar e todos oram juntos antes da refeição.</p>
+                        <button class="btn" onclick="toggleFavorite('Jantar Compartilhado', 'dynamics')">Favoritar</button>
+                        <button class="btn" onclick="playAudio('Jantar Compartilhado')">Ouvir</button>
                     </div>
                     <div class="carousel-item" data-category="comunhao">
                         <h3>Cartão de Encorajamento</h3>
                         <p>Escreva cartões de encorajamento para os membros do grupo e distribua.</p>
+                        <button class="btn" onclick="toggleFavorite('Cartão de Encorajamento', 'dynamics')">Favoritar</button>
+                        <button class="btn" onclick="playAudio('Cartão de Encorajamento')">Ouvir</button>
                     </div>
                     <div class="carousel-item" data-category="comunhao">
                         <h3>Memórias em Fotos</h3>
                         <p>Crie um mural com fotos dos encontros da célula e relembre momentos especiais.</p>
+                        <button class="btn" onclick="toggleFavorite('Memórias em Fotos', 'dynamics')">Favoritar</button>
+                        <button class="btn" onclick="playAudio('Memórias em Fotos')">Ouvir</button>
                     </div>
                     <div class="carousel-item" data-category="comunhao">
                         <h3>Louvor em Grupo</h3>
                         <p>Escolha um louvor e cante juntos, com cada pessoa liderando uma parte.</p>
+                        <button class="btn" onclick="toggleFavorite('Louvor em Grupo', 'dynamics')">Favoritar</button>
+                        <button class="btn" onclick="playAudio('Louvor em Grupo')">Ouvir</button>
                     </div>
                     <div class="carousel-item" data-category="comunhao">
                         <h3>Abraço Coletivo</h3>
                         <p>Faça um momento de abraço coletivo e ore pela união do grupo.</p>
+                        <button class="btn" onclick="toggleFavorite('Abraço Coletivo', 'dynamics')">Favoritar</button>
+                        <button class="btn" onclick="playAudio('Abraço Coletivo')">Ouvir</button>
                     </div>
                     <div class="carousel-item" data-category="comunhao">
                         <h3>Versículo para o Grupo</h3>
                         <p>Escolha um versículo que represente o grupo e ore por ele.</p>
+                        <button class="btn" onclick="toggleFavorite('Versículo para o Grupo', 'dynamics')">Favoritar</button>
+                        <button class="btn" onclick="playAudio('Versículo para o Grupo')">Ouvir</button>
                     </div>
                     <div class="carousel-item" data-category="comunhao">
                         <h3>História do Nome</h3>
                         <p>Cada pessoa conta a história por trás de seu nome e como Deus a usou.</p>
+                        <button class="btn" onclick="toggleFavorite('História do Nome', 'dynamics')">Favoritar</button>
+                        <button class="btn" onclick="playAudio('História do Nome')">Ouvir</button>
                     </div>
                     <div class="carousel-item" data-category="comunhao">
                         <h3>Passeio em Grupo</h3>
                         <p>Organize um passeio ao ar livre para fortalecer os laços do grupo.</p>
+                        <button class="btn" onclick="toggleFavorite('Passeio em Grupo', 'dynamics')">Favoritar</button>
+                        <button class="btn" onclick="playAudio('Passeio em Grupo')">Ouvir</button>
                     </div>
                     <div class="carousel-item" data-category="comunhao">
                         <h3>Caixa de Memórias</h3>
                         <p>Crie uma caixa onde cada pessoa coloca um objeto que representa o grupo.</p>
+                        <button class="btn" onclick="toggleFavorite('Caixa de Memórias', 'dynamics')">Favoritar</button>
+                        <button class="btn" onclick="playAudio('Caixa de Memórias')">Ouvir</button>
                     </div>
                     <div class="carousel-item" data-category="quebra-gelo">
                         <h3>Qual é o Louvor?</h3>
                         <p>Toque trechos de louvores conhecidos e deixe o grupo adivinhar o nome.</p>
+                        <button class="btn" onclick="toggleFavorite('Qual é o Louvor?', 'dynamics')">Favoritar</button>
+                        <button class="btn" onclick="playAudio('Qual é o Louvor?')">Ouvir</button>
                     </div>
                     <div class="carousel-item" data-category="quebra-gelo">
                         <h3>Personagem Bíblico</h3>
                         <p>Cada pessoa representa um personagem bíblico e o grupo adivinha quem é.</p>
+                        <button class="btn" onclick="toggleFavorite('Personagem Bíblico', 'dynamics')">Favoritar</button>
+                        <button class="btn" onclick="playAudio('Personagem Bíblico')">Ouvir</button>
                     </div>
                     <div class="carousel-item" data-category="quebra-gelo">
                         <h3>Objeto Misterioso</h3>
                         <p>Coloque objetos em uma sacola. Cada pessoa pega um e cria uma história espiritual com ele.</p>
+                        <button class="btn" onclick="toggleFavorite('Objeto Misterioso', 'dynamics')">Favoritar</button>
+                        <button class="btn" onclick="playAudio('Objeto Misterioso')">Ouvir</button>
                     </div>
                     <div class="carousel-item" data-category="quebra-gelo">
                         <h3>Se Eu Fosse...</h3>
                         <p>Cada pessoa diz "Se eu fosse um animal, seria..." e explica o porquê.</p>
+                        <button class="btn" onclick="toggleFavorite('Se Eu Fosse...', 'dynamics')">Favoritar</button>
+                        <button class="btn" onclick="playAudio('Se Eu Fosse...')">Ouvir</button>
                     </div>
                     <div class="carousel-item" data-category="reflexao">
                         <h3>Promessa para Hoje</h3>
                         <p>Cada pessoa escolhe uma promessa de Deus e compartilha como ela se aplica à sua vida.</p>
+                        <button class="btn" onclick="toggleFavorite('Promessa para Hoje', 'dynamics')">Favoritar</button>
+                        <button class="btn" onclick="playAudio('Promessa para Hoje')">Ouvir</button>
                     </div>
                     <div class="carousel-item" data-category="reflexao">
                         <h3>Reflexão em Grupo</h3>
                         <p>Leia uma passagem e cada pessoa diz uma palavra que resume o que aprendeu.</p>
+                        <button class="btn" onclick="toggleFavorite('Reflexão em Grupo', 'dynamics')">Favoritar</button>
+                        <button class="btn" onclick="playAudio('Reflexão em Grupo')">Ouvir</button>
                     </div>
                     <div class="carousel-item" data-category="evangelismo">
                         <h3>Cartão de Bênção</h3>
                         <p>Escreva cartões com bênçãos e distribua para pessoas na comunidade.</p>
+                        <button class="btn" onclick="toggleFavorite('Cartão de Bênção', 'dynamics')">Favoritar</button>
+                        <button class="btn" onclick="playAudio('Cartão de Bênção')">Ouvir</button>
                     </div>
                     <div class="carousel-item" data-category="evangelismo">
                         <h3>Convite para um Café</h3>
                         <p>Convide um amigo para um café e compartilhe sua fé de forma natural.</p>
+                        <button class="btn" onclick="toggleFavorite('Convite para um Café', 'dynamics')">Favoritar</button>
+                        <button class="btn" onclick="playAudio('Convite para um Café')">Ouvir</button>
                     </div>
                     <div class="carousel-item" data-category="comunhao">
                         <h3>Versículo de Encorajamento</h3>
                         <p>Cada pessoa escolhe um versículo para encorajar outro membro do grupo.</p>
+                        <button class="btn" onclick="toggleFavorite('Versículo de Encorajamento', 'dynamics')">Favoritar</button>
+                        <button class="btn" onclick="playAudio('Versículo de Encorajamento')">Ouvir</button>
                     </div>
                     <div class="carousel-item" data-category="comunhao">
                         <h3>História de Amizade</h3>
                         <p>Compartilhe uma história de como um amigo do grupo te ajudou espiritualmente.</p>
+                        <button class="btn" onclick="toggleFavorite('História de Amizade', 'dynamics')">Favoritar</button>
+                        <button class="btn" onclick="playAudio('História de Amizade')">Ouvir</button>
                     </div>
                     <div class="carousel-item" data-category="quebra-gelo">
                         <h3>Caça ao Tesouro</h3>
                         <p>Esconda objetos pela sala e crie pistas com temas bíblicos para encontrá-los.</p>
+                        <button class="btn" onclick="toggleFavorite('Caça ao Tesouro', 'dynamics')">Favoritar</button>
+                        <button class="btn" onclick="playAudio('Caça ao Tesouro')">Ouvir</button>
                     </div>
                     <div class="carousel-item" data-category="reflexao">
                         <h3>Reflexão com Música</h3>
                         <p>Escolha um louvor e peça para cada pessoa compartilhar o que a letra significa para ela.</p>
+                        <button class="btn" onclick="toggleFavorite('Reflexão com Música', 'dynamics')">Favoritar</button>
+                        <button class="btn" onclick="playAudio('Reflexão com Música')">Ouvir</button>
                     </div>
                     <div class="carousel-item" data-category="evangelismo">
                         <h3>Versículo na Rua</h3>
                         <p>Escreva versículos em cartazes e deixe em locais públicos para inspirar pessoas.</p>
+                        <button class="btn" onclick="toggleFavorite('Versículo na Rua', 'dynamics')">Favoritar</button>
+                        <button class="btn" onclick="playAudio('Versículo na Rua')">Ouvir</button>
                     </div>
                     <div class="carousel-item" data-category="comunhao">
                         <h3>Grupo de Oração</h3>
                         <p>Forme pequenos grupos para orar por pedidos específicos dos membros.</p>
+                        <button class="btn" onclick="toggleFavorite('Grupo de Oração', 'dynamics')">Favoritar</button>
+                        <button class="btn" onclick="playAudio('Grupo de Oração')">Ouvir</button>
                     </div>
                     <div class="carousel-item" data-category="quebra-gelo">
                         <h3>Quiz Bíblico</h3>
                         <p>Crie um quiz com perguntas bíblicas e divida o grupo em equipes para responder.</p>
+                        <button class="btn" onclick="toggleFavorite('Quiz Bíblico', 'dynamics')">Favoritar</button>
+                        <button class="btn" onclick="playAudio('Quiz Bíblico')">Ouvir</button>
                     </div>
                 </div>
                 <button id="next-btn" class="carousel-btn"><i class="fas fa-chevron-right"></i></button>
@@ -656,19 +1166,35 @@
             <p id="daily-verse"></p>
             <button onclick="getDailyVerse()"><i class="fas fa-sync-alt"></i> Novo Versículo</button>
             <button onclick="shareVerse()"><i class="fas fa-share"></i> Compartilhar</button>
+            <button class="btn" onclick="playVerseAudio()">Ouvir Versículo</button>
             <div class="verse-search">
-                <input type="text" id="verse-search-input" placeholder="Buscar versículo..." onkeyup="searchVerses()">
+                <input type="text" id="verse-search-input" placeholder="Buscar versículo ou palavra-chave...">
+                <button class="btn" onclick="advancedSearchVerses()">Pesquisar Avançado</button>
             </div>
             <div id="verse-list" class="verse-list"></div>
+            <div class="favorites" id="favorites-verses"></div>
         </section>
 
         <section id="devotionals">
             <h2>Devocionais</h2>
+            <div class="filter-bar">
+                <button class="filter-btn active" onclick="filterDevotionals('all')">Todos</button>
+                <button class="filter-btn" onclick="filterDevotionals('fé')">Fé</button>
+                <button class="filter-btn" onclick="filterDevotionals('amor')">Amor</button>
+                <button class="filter-btn" onclick="filterDevotionals('gratidão')">Gratidão</button>
+            </div>
+            <div class="progress" id="progress-devotionals"></div>
             <div id="devotional-grid" class="devotional-grid"></div>
             <div class="pagination">
                 <button id="prev-page" onclick="changePage(-1)">Anterior</button>
                 <button id="next-page" onclick="changePage(1)">Próxima</button>
             </div>
+            <div class="favorites" id="favorites-devotionals"></div>
+        </section>
+
+        <section id="calendar">
+            <h2>Calendário de Eventos</h2>
+            <div id='calendar'></div>
         </section>
     </div>
 
@@ -676,6 +1202,8 @@
         <div class="modal-content">
             <span class="close-btn" onclick="closeModal()">×</span>
             <div id="modal-body"></div>
+            <textarea id="note-input" placeholder="Adicione uma nota pessoal..." rows="3"></textarea>
+            <button class="btn" onclick="saveNote()">Salvar Nota</button>
         </div>
     </div>
 
@@ -685,13 +1213,64 @@
         <p>© 2025 Flechas da Paz Church Paraipaba - Life Group | <a href="mailto:contato@flechasdapaz.com">contato@flechasdapaz.com</a></p>
     </footer>
 
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js'></script>
+    <script src='https://cdn.jsdelivr.net/npm/@fullcalendar/core@5.11.3/locales-all.min.js'></script>
     <script>
-        // Dark Mode Toggle
-        const toggleButton = document.getElementById('dark-mode-toggle');
-        toggleButton.addEventListener('click', () => {
+        // Sidebar Toggle
+        function toggleSidebar() {
+            const sidebar = document.querySelector('.sidebar');
+            const mainContent = document.querySelector('.main-content');
+            sidebar.classList.toggle('hidden');
+            mainContent.classList.toggle('full');
+        }
+
+        // Theme Toggle
+        let isCustomTheme = false;
+        const themeToggle = document.getElementById('theme-toggle');
+        themeToggle.addEventListener('click', () => {
             document.body.classList.toggle('dark-mode');
-            toggleButton.textContent = document.body.classList.contains('dark-mode') ? '☀️' : '🌙';
+            themeToggle.textContent = document.body.classList.contains('dark-mode') ? '☀️' : '🌙';
         });
+
+        function toggleCustomTheme() {
+            document.body.classList.toggle('custom-theme');
+            isCustomTheme = !isCustomTheme;
+        }
+
+        // Favorites
+        let favorites = JSON.parse(localStorage.getItem('favorites')) || { dynamics: [], verses: [], devotionals: [] };
+
+        function toggleFavorite(item, type) {
+            const index = favorites[type].indexOf(item);
+            if (index === -1) {
+                favorites[type].push(item);
+            } else {
+                favorites[type].splice(index, 1);
+            }
+            localStorage.setItem('favorites', JSON.stringify(favorites));
+            updateFavorites();
+        }
+
+        function updateFavorites() {
+            ['dynamics', 'verses', 'devotionals'].forEach(type => {
+                const favElement = document.getElementById(`favorites-${type}`);
+                favElement.innerHTML = favorites[type].length ? `<h3>Favoritos (${type}):</h3><ul>${favorites[type].map(item => `<li>${item}</li>`).join('')}</ul>` : '';
+            });
+        }
+
+        // Audio
+        const audio = new SpeechSynthesisUtterance();
+        audio.lang = 'pt-BR';
+
+        function playAudio(text) {
+            audio.text = text;
+            window.speechSynthesis.speak(audio);
+        }
+
+        function playVerseAudio() {
+            const verse = document.getElementById('daily-verse').textContent;
+            playAudio(verse);
+        }
 
         // Dynamics Carousel
         const carousel = document.getElementById('carousel');
@@ -704,12 +1283,13 @@
         function updateCarousel() {
             const items = Array.from(document.querySelectorAll('.carousel-item'));
             visibleItems = items.filter(item => currentCategory === 'all' || item.dataset.category === currentCategory);
-            const itemWidth = items[0].offsetWidth + 16;
+            const itemWidth = items[0].offsetWidth + 8;
             if (currentIndex >= visibleItems.length) currentIndex = 0;
             if (currentIndex < 0) currentIndex = visibleItems.length - 1;
             items.forEach(item => item.classList.remove('active'));
+            const itemsToShow = window.innerWidth <= 768 ? 1 : 3;
             visibleItems.forEach((item, index) => {
-                if (index >= currentIndex && index < currentIndex + 3) item.classList.add('active');
+                if (index >= currentIndex && index < currentIndex + itemsToShow) item.classList.add('active');
             });
             const offset = -currentIndex * itemWidth;
             carousel.style.transform = `translateX(${offset}px)`;
@@ -718,18 +1298,18 @@
         function filterDynamics(category) {
             currentCategory = category;
             currentIndex = 0;
-            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('#dynamics .filter-btn').forEach(btn => btn.classList.remove('active'));
             document.querySelector(`button[onclick="filterDynamics('${category}')"]`).classList.add('active');
             updateCarousel();
         }
 
         nextBtn.addEventListener('click', () => {
-            currentIndex++;
+            currentIndex += window.innerWidth <= 768 ? 1 : 3;
             updateCarousel();
         });
 
         prevBtn.addEventListener('click', () => {
-            currentIndex--;
+            currentIndex -= window.innerWidth <= 768 ? 1 : 3;
             updateCarousel();
         });
 
@@ -771,136 +1351,198 @@
             "Aquele que não ama não conhece a Deus, pois Deus é amor. (1 João 4:8)",
             "O Senhor é meu ajudador, não temerei. O que me podem fazer os homens? (Hebreus 13:6)",
             "A palavra de Deus é viva e eficaz, mais afiada que qualquer espada de dois gumes. (Hebreus 4:12)",
-            "Quem crer e for batizado será salvo; mas quem não crer será condenado. (Marcos 16:16)",
-            "Portanto, se alguém está em Cristo, nova criatura é; as coisas velhas já passaram; eis que tudo se fez novo. (2 Coríntios 5:17)",
-            "Não se turbe o vosso coração; credes em Deus, crede também em mim. (João 14:1)",
-            "Mas os que esperam no Senhor renovarão as suas forças; subirão com asas como águias. (Isaías 40:31)",
-            "O amor não faz mal ao próximo; de sorte que o amor é o cumprimento da lei. (Romanos 13:10)",
-            "Porque o Senhor corrige o que ama, assim como o pai ao filho a quem quer bem. (Provérbios 3:12)",
-            "Vinde a mim, todos os que estais cansados e oprimidos, e eu vos aliviarei. (Mateus 11:28)",
+            "Quem crer e for batizado será salvo; mas quem não será condenado. (Marcos 16:16)",
             "Porque o salário do pecado é a morte, mas o dom gratuito de Deus é a vida eterna em Cristo Jesus, nosso Senhor. (Romanos 6:23)",
-            "Quem anda em integridade anda seguro, mas o que perverte os seus caminhos será conhecido. (Provérbios 10:9)",
-            "O Senhor é a minha luz e a minha salvação; a quem temerei? (Salmos 27:1)",
-            "Porque o Senhor dá sabedoria; da sua boca vem o conhecimento e o entendimento. (Provérbios 2:6)",
-            "E conhecereis a verdade, e a verdade vos libertará. (João 8:32)",
-            "Deleite-se no Senhor, e ele atenderá aos desejos do seu coração. (Salmos 37:4)",
-            "O Senhor está perto dos que têm o coração quebrantado e salva os de espírito abatido. (Salmos 34:18)",
-            "Não vos conformeis com este mundo, mas transformai-vos pela renovação da vossa mente. (Romanos 12:2)",
-            "Seja Deus verdadeiro, e todo homem mentiroso. (Romanos 3:4)",
-            "Alegrem-se na esperança, sejam pacientes na tribulação, perseverem na oração. (Romanos 12:12)",
-            "Porque nele foram criadas todas as coisas, nos céus e na terra, visíveis e invisíveis. (Colossenses 1:16)",
-            "O Senhor é compassivo e misericordioso, longânimo e grande em benignidade. (Salmos 103:8)",
-            "Porque a palavra de Deus é rápida, poderosa e mais cortante que qualquer espada de dois gumes. (Hebreus 4:12)",
-            "Honra teu pai e tua mãe, para que se prolonguem os teus dias na terra que o Senhor teu Deus te dá. (Êxodo 20:12)",
-            "O Senhor luta por vocês; tão somente fiquem calmos. (Êxodo 14:14)",
-            "Porque o Senhor é bom, a sua misericórdia dura para sempre, e a sua fidelidade de geração em geração. (Salmos 100:5)",
-            "Não temas, pois estou com você; não tenha medo, pois sou o seu Deus. (Isaías 41:10)"
+            "Vinde a mim, todos os que estais cansados e oprimidos, e eu vos aliviarei. (Mateus 11:28)",
+            "A sua palavra é lâmpada para os meus pés e luz para o meu caminho. (Salmos 119:105)",
+            "Porque o Senhor corrige o que ama, assim como o pai corrige o filho a quem quer bem. (Provérbios 3:12)",
+            "Regozijai-vos sempre no Senhor; outra vez digo, regozijai-vos! (Filipenses 4:4)",
+            "O Senhor lutará por vós, e vós vos calareis. (Êxodo 14:14)",
+            "Seja-vos feito segundo a vossa fé. (Mateus 9:29)",
+            "Eis que estou à porta e bato; se alguém ouvir a minha voz e abrir a porta, entrarei em sua casa e cearei com ele, e ele comigo. (Apocalipse 3:20)",
+            "Os céus declaram a glória de Deus; o firmamento proclama a obra das suas mãos. (Salmos 19:1)",
+            "Porque somos feitura dele, criados em Cristo Jesus para as boas obras, as quais Deus preparou de antemão para que andássemos nelas. (Efésios 2:10)",
+            "Não temas, pois estou com você; não tenha medo, pois sou o seu Deus. (Isaías 41:10)",
+            "Sejam fortes e corajosos todos vocês que esperam no Senhor! (Salmos 31:24)",
+            "E esta é a confiança que temos nele: que, se pedirmos alguma coisa segundo a sua vontade, ele nos ouve. (1 João 5:14)"
         ];
 
         function getDailyVerse() {
-            const verseElement = document.getElementById('daily-verse');
-            const randomVerse = verses[Math.floor(Math.random() * verses.length)];
-            verseElement.textContent = randomVerse;
+            const today = new Date().toISOString().split('T')[0];
+            const storedDate = localStorage.getItem('verseDate');
+            let verseIndex = localStorage.getItem('verseIndex');
+
+            if (storedDate !== today || !verseIndex) {
+                verseIndex = Math.floor(Math.random() * verses.length);
+                localStorage.setItem('verseDate', today);
+                localStorage.setItem('verseIndex', verseIndex);
+            }
+
+            document.getElementById('daily-verse').textContent = verses[verseIndex];
         }
 
         function shareVerse() {
             const verse = document.getElementById('daily-verse').textContent;
-            const shareText = `Versículo do Dia: ${verse} - Flechas da Paz Life Group`;
             if (navigator.share) {
                 navigator.share({
                     title: 'Versículo do Dia',
-                    text: shareText,
+                    text: verse,
                     url: window.location.href
                 });
             } else {
-                alert('Copie o versículo para compartilhar: ' + shareText);
+                navigator.clipboard.writeText(verse);
+                alert('Versículo copiado para a área de transferência!');
             }
         }
 
-        function searchVerses() {
-            const input = document.getElementById('verse-search-input').value.toLowerCase();
+        function advancedSearchVerses() {
+            const query = document.getElementById('verse-search-input').value.toLowerCase();
             const verseList = document.getElementById('verse-list');
             verseList.innerHTML = '';
-            const filteredVerses = verses.filter(verse => verse.toLowerCase().includes(input));
+
+            const filteredVerses = verses.filter(verse => verse.toLowerCase().includes(query));
             filteredVerses.forEach(verse => {
                 const p = document.createElement('p');
                 p.textContent = verse;
+                p.onclick = () => {
+                    document.getElementById('daily-verse').textContent = verse;
+                    toggleFavorite(verse, 'verses');
+                };
                 verseList.appendChild(p);
             });
-        }
 
-        getDailyVerse();
-        searchVerses();
+            if (filteredVerses.length === 0) {
+                verseList.innerHTML = '<p>Nenhum versículo encontrado.</p>';
+            }
+        }
 
         // Devotionals
-        const devotionals = Array.from({ length: 60 }, (_, i) => ({
-            id: `devotional${i + 1}`,
-            title: `Devocional ${i + 1}`,
-            content: `
-                <h3>Devocional ${i + 1}</h3>
-                <p><strong>Versículo:</strong> "${verses[i]}"}</p>
-                <p><strong>Reflexão:</strong> Este versículo nos lembra que Deus está sempre presente em nossas vidas, guiando-nos e nos sustentando. Reflita sobre como você pode aplicar essa verdade hoje.</p>
-                <p><strong>Aplicação:</strong> Dedique um momento para orar e pedir a Deus direção para sua vida, confiando na promessa deste versículo.</p>
-                <p><strong>Oração:</strong> Senhor, obrigado por Tua palavra que me guia e consola. Ajuda-me a viver segundo a Tua vontade. Amém.</p>
-            `
-        }));
+        const devotionals = [
+            { title: 'A Fé que Move Montanhas', category: 'fé', content: 'A fé nos conecta ao poder de Deus. Quando confiamos plenamente, até o impossível se torna possível.' },
+            { title: 'Amor Incondicional', category: 'amor', content: 'Deus nos ama sem condições, e somos chamados a amar o próximo da mesma forma.' },
+            { title: 'Gratidão em Meio às Tempestades', category: 'gratidão', content: 'A gratidão transforma nosso coração, mesmo nas dificuldades.' },
+            { title: 'Crescendo na Fé', category: 'fé', content: 'A fé cresce quando enfrentamos desafios confiando em Deus.' },
+            { title: 'O Poder do Amor', category: 'amor', content: 'O amor de Deus é a força que une e cura.' },
+            { title: 'Ser Grato em Tudo', category: 'gratidão', content: 'A gratidão nos aproxima de Deus e traz paz ao coração.' },
+            { title: 'Fé em Tempos Difíceis', category: 'fé', content: 'Quando tudo parece perdido, a fé nos sustenta.' },
+            { title: 'Amar como Jesus Amou', category: 'amor', content: 'Jesus é o maior exemplo de amor sacrificial.' },
+            { title: 'Um Coração Agradecido', category: 'gratidão', content: 'Um coração grato reflete a presença de Deus.' },
+            { title: 'A Força da Fé', category: 'fé', content: 'A fé nos dá coragem para seguir em frente.' },
+            { title: 'Amor que Transforma', category: 'amor', content: 'O amor de Deus transforma vidas e corações.' },
+            { title: 'Gratidão Diária', category: 'gratidão', content: 'Praticar a gratidão diariamente nos aproxima de Deus.' }
+        ];
 
         let currentPage = 1;
-        const itemsPerPage = 9;
+        const itemsPerPage = 6;
+        let currentDevotionalCategory = 'all';
 
-        function displayDevotionals() {
+        function filterDevotionals(category) {
+            currentDevotionalCategory = category;
+            currentPage = 1;
+            document.querySelectorAll('#devotionals .filter-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelector(`button[onclick="filterDevotionals('${category}')"]`).classList.add('active');
+            renderDevotionals();
+        }
+
+        function renderDevotionals() {
             const grid = document.getElementById('devotional-grid');
             grid.innerHTML = '';
+
+            const filteredDevotionals = devotionals.filter(dev => currentDevotionalCategory === 'all' || dev.category === currentDevotionalCategory);
             const start = (currentPage - 1) * itemsPerPage;
             const end = start + itemsPerPage;
-            const pageItems = devotionals.slice(start, end);
-            pageItems.forEach(item => {
+            const paginatedDevotionals = filteredDevotionals.slice(start, end);
+
+            paginatedDevotionals.forEach(dev => {
                 const card = document.createElement('div');
                 card.className = 'devotional-card';
-                card.innerHTML = `<h3>${item.title}</h3><p>Clique para ler este devocional.</p>`;
-                card.onclick = () => openModal(item.id);
+                card.innerHTML = `
+                    <h3>${dev.title}</h3>
+                    <p>${dev.content}</p>
+                    <button class="btn" onclick="toggleFavorite('${dev.title}', 'devotionals')">Favoritar</button>
+                    <button class="btn" onclick="openModal('${dev.title}', '${dev.content}')">Ler Mais</button>
+                    <button class="btn" onclick="playAudio('${dev.title}. ${dev.content}')">Ouvir</button>
+                `;
                 grid.appendChild(card);
             });
+
             document.getElementById('prev-page').disabled = currentPage === 1;
-            document.getElementById('next-page').disabled = end >= devotionals.length;
+            document.getElementById('next-page').disabled = end >= filteredDevotionals.length;
+
+            updateProgress(filteredDevotionals.length);
         }
 
-        function changePage(delta) {
-            currentPage += delta;
-            if (currentPage < 1) currentPage = 1;
-            if (currentPage > Math.ceil(devotionals.length / itemsPerPage)) currentPage = Math.ceil(devotionals.length / itemsPerPage);
-            displayDevotionals();
+        function changePage(direction) {
+            currentPage += direction;
+            renderDevotionals();
         }
 
-        function openModal(id) {
+        function updateProgress(totalItems) {
+            const progress = document.getElementById('progress-devotionals');
+            const completed = Math.min((currentPage * itemsPerPage), totalItems);
+            progress.innerHTML = `<h3>Progresso:</h3><p>${completed} de ${totalItems} devocionais visualizados.</p>`;
+        }
+
+        // Modal
+        let currentModalItem = null;
+
+        function openModal(title, content) {
+            currentModalItem = title;
             const modal = document.getElementById('modal');
             const modalBody = document.getElementById('modal-body');
-            const devotional = devotionals.find(d => d.id === id);
-            modalBody.innerHTML = devotional.content;
+            modalBody.innerHTML = `<h2>${title}</h2><p>${content}</p>`;
+            const storedNote = localStorage.getItem(`note-${title}`) || '';
+            document.getElementById('note-input').value = storedNote;
             modal.style.display = 'block';
         }
 
         function closeModal() {
-            const modal = document.getElementById('modal');
-            modal.style.display = 'none';
+            document.getElementById('modal').style.display = 'none';
         }
 
-        displayDevotionals();
-
-        // Back to Top Button
-        const backToTopButton = document.getElementById('back-to-top');
-        window.addEventListener('scroll', () => {
-            if (window.scrollY > 300) {
-                backToTopButton.style.display = 'block';
-            } else {
-                backToTopButton.style.display = 'none';
+        function saveNote() {
+            const note = document.getElementById('note-input').value;
+            if (currentModalItem) {
+                localStorage.setItem(`note-${currentModalItem}`, note);
+                alert('Nota salva com sucesso!');
             }
+        }
+
+        // Calendar
+        document.addEventListener('DOMContentLoaded', function() {
+            const calendarEl = document.getElementById('calendar');
+            const calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                locale: 'pt-br',
+                events: [
+                    { title: 'Reunião da Célula', start: '2025-05-10T19:00:00' },
+                    { title: 'Culto de Domingo', start: '2025-05-11T17:30:00' },
+                    { title: 'Encontro de Jovens', start: '2025-05-15T18:00:00' },
+                    { title: 'Dia de Oração', start: '2025-05-20', allDay: true }
+                ],
+                eventClick: function(info) {
+                    alert(`Evento: ${info.event.title}\nData: ${info.event.start.toLocaleString('pt-BR')}`);
+                }
+            });
+            calendar.render();
         });
+
+        // Back to Top
+        window.onscroll = function() {
+            const backToTop = document.getElementById('back-to-top');
+            backToTop.style.display = window.scrollY > 300 ? 'block' : 'none';
+        };
+
         function scrollToTop() {
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        updateCarousel();
+        // Initialize
+        window.onload = function() {
+            getDailyVerse();
+            renderDevotionals();
+            updateFavorites();
+        };
     </script>
 </body>
 </html>
